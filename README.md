@@ -1,6 +1,6 @@
-# MacaoGearSolid
+# MacacoGearSolid
 
-*MacaoGearSolid* est un jeu inspiré par les jeux Metal Gear d'Hideo Kojima, avec une touche simiesque dans sa formule.
+*MacacoGearSolid* est un jeu inspiré par les jeux Metal Gear d'Hideo Kojima, avec une touche simiesque dans sa formule.
 
 Ce projet a été réalisé dans le cadre du module C# de la B2 informatique du campus d'Aix-en-Provence d'Ynov.
 
