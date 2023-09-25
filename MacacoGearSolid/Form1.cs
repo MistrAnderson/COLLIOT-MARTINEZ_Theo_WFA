@@ -23,6 +23,19 @@ namespace MacacoGearSolid
         public Form1()
         {
             InitializeComponent();
+
+            // Set player and enemies position
+            player.Left = 86;
+            player.Top = 400;
+
+            foe1.Left = 430;
+            foe1.Top = 250;
+
+            foe2.Left = 160;
+            foe2.Top = 150;
+
+            foe3.Left = 570;
+            foe3.Top = 280;
         }
 
         private void MainGameTimerEvent(object sender, EventArgs e)
@@ -35,6 +48,10 @@ namespace MacacoGearSolid
             if (goUp) { player.Top -= playerSpeed; }
             if (goDown) { player.Top += playerSpeed; }
 
+            // Loop through all controls, check if they have the tag 'platforme'
+            // then test if their bounds intersect with the player.
+            // If they do, depending on the direction of the player's movement,
+            // snap the player to the edge of the platform.
             foreach (Control x in this.Controls)
             {
                 if (x is PictureBox)
@@ -47,8 +64,6 @@ namespace MacacoGearSolid
                             if (goLeft && player.Right >= x.Right && player.Left <= x.Right)
                             {
                                 // Prevent moving left if collision on the left side
-                                Debug.WriteLine("Can't go left");
-                                Debug.WriteLine($"{player.Left} < {x.Right}");
                                 player.Left = x.Right;
                                 goLeft = false;
                                 // TODO TP player to wall
@@ -56,24 +71,52 @@ namespace MacacoGearSolid
                             else if (goRight && player.Left <= x.Left && player.Right >= x.Left)
                             {
                                 // Prevent moving right if collision on the right side
-                                Debug.WriteLine("ruef");
                                 player.Left = x.Left - player.Width;
                                 goRight = false;
                             }
                             else if (goUp && player.Top <= x.Bottom && player.Bottom >= x.Bottom)
                             {
                                 // Prevent moving up if collision on the top side
-                                Debug.WriteLine("HAHA");
                                 player.Top = x.Bottom;
                                 goUp = false;
                             }
                             else if (goDown && player.Bottom >= x.Top && player.Top >= x.Top)
                             {
                                 // Prevent moving down if collision on the bottom side
-                                Debug.WriteLine("AHAH");
                                 player.Top = x.Top - player.Height;
                                 goDown = false;
                             }
+                        }
+                    }
+
+                    // Set visibility of coins to false and add 1 to score if player Intersects with
+                    // a visible coin
+                    if ((string)x.Tag == "coin")
+                    {
+                        if (player.Bounds.IntersectsWith(x.Bounds) && x.Visible)
+                        {
+                            x.Visible = false;
+                            score++;
+                        }
+                    }
+
+                    if ((string)x.Tag == "enemy")
+                    {
+                        if (player.Bounds.IntersectsWith(x.Bounds))
+                        {
+                            gameTimer.Stop();
+                            isGameOver = true;
+                            txtScore.Text = "Score: " + score + Environment.NewLine + "GAME OVER";
+                        }
+                    }
+
+                    if ((string)x.Name == "exit")
+                    {
+                        if (player.Bounds.IntersectsWith(x.Bounds))
+                        {
+                            gameTimer.Stop();
+                            isGameOver = true;
+                            txtScore.Text = "Score: " + score + Environment.NewLine + "YOU ESCAPED";
                         }
                     }
                 }
@@ -143,7 +186,7 @@ namespace MacacoGearSolid
             txtScore.Text = "Score: " + score;
 
             // Reset visibility of entities
-            foreach(Control c in this.Controls)
+            foreach (Control c in this.Controls)
             {
                 if (c is PictureBox && c.Visible == false)
                 {
@@ -152,17 +195,17 @@ namespace MacacoGearSolid
             }
 
             // Reset player and enemies position
-            player.Left = 560;
-            player.Top = 86;
+            player.Left = 86;
+            player.Top = 400;
 
-            foe1.Left = 570;
-            foe1.Top = 280;
+            foe1.Left = 430;
+            foe1.Top = 250;
 
-            foe2.Left = 210;
-            foe2.Top = 160;
+            foe2.Left = 160;
+            foe2.Top = 150;
 
-            foe3.Left = 740;
-            foe3.Top = 310;
+            foe3.Left = 570;
+            foe3.Top = 280;
 
 
             gameTimer.Start();
