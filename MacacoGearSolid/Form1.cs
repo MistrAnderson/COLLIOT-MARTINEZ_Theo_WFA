@@ -1,10 +1,12 @@
-﻿using System;
+﻿using MacacoGearSolid.Properties;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,7 +20,11 @@ namespace MacacoGearSolid
         int score;
         int playerSpeed = 5;
 
-        int enemySPeed = 5;
+        int foe1SpeedHoriz = 2;
+        int foe1SpeedVert = 0;
+
+        int foe2SpeedHoriz = 0;
+        int foe2SpeedVert = 2;
 
         public Form1()
         {
@@ -48,6 +54,7 @@ namespace MacacoGearSolid
             if (goUp) { player.Top -= playerSpeed; }
             if (goDown) { player.Top += playerSpeed; }
 
+
             // Loop through all controls, check if they have the tag 'platforme'
             // then test if their bounds intersect with the player.
             // If they do, depending on the direction of the player's movement,
@@ -66,7 +73,6 @@ namespace MacacoGearSolid
                                 // Prevent moving left if collision on the left side
                                 player.Left = x.Right;
                                 goLeft = false;
-                                // TODO TP player to wall
                             }
                             else if (goRight && player.Left <= x.Left && player.Right >= x.Left)
                             {
@@ -119,8 +125,29 @@ namespace MacacoGearSolid
                             txtScore.Text = "Score: " + score + Environment.NewLine + "YOU ESCAPED";
                         }
                     }
+
+                    // Hides the path the enemies follow
+                    if((string)x.Tag == "path")
+                    {
+                        x.Visible = false;
+                    }
                 }
             }
+            foe1.mouvement();
+            pathHandler(foe1, foe1PathVert, foe1PathHoriz);
+
+            foe2.mouvement();
+            pathHandler(foe2, foe2PathVert, foe2PathHoriz);
+
+            foe3.mouvement();
+            pathHandler(foe3, foe3PathVert, foe3PathHoriz);
+
+            foe4.mouvement();
+            pathHandler(foe4, foe4PathVert, foe4PathHoriz);
+
+            foe5.mouvement();
+            pathHandler(foe5, foe5PathVert, foe5PathHoriz);
+
         }
 
         private void KeyIsDown(object sender, KeyEventArgs e)
@@ -207,9 +234,63 @@ namespace MacacoGearSolid
             foe3.Left = 570;
             foe3.Top = 280;
 
-
             gameTimer.Start();
+        }
 
+        private void pathHandler(Enemy foe, PictureBox vertPath, PictureBox horizPath)
+        {
+            if (foe.Top < vertPath.Top || foe.Bottom > vertPath.Bottom)
+            {
+                // Snap the foe to the closest end of his path
+                if (vertPath.Top - foe.Top > 0)
+                {
+                    foe.Top = vertPath.Top + 1;
+                }
+                else
+                {
+                    foe.Top = vertPath.Bottom - foe.Height - 1;
+                }
+                //int r = new Random().Next(0,2);
+                //Debug.WriteLine($"Random number is {r}");
+                switch (new Random().Next(0, 2))
+                {
+                    case 0:
+                        foe.vertSpeed *= -1;
+                        break;
+                    case 1:
+                        foe.vertSpeed = 0;
+                        foe.horizSpeed = 2;
+                        break;
+
+                }
+            }
+
+            if (foe.Left < horizPath.Left || foe.Right > horizPath.Right)
+            {
+                // Snap the foe to the closest end of his path
+                if (horizPath.Left - foe.Left > 0)
+                {
+                    foe.Left = horizPath.Left + 1;
+                }
+                else
+                {
+                    foe.Left = horizPath.Right - foe.Width - 1;
+                }
+
+                //int r = new Random().Next(0,2);
+                //Debug.WriteLine($"Random number is {r}");
+                switch (new Random().Next(0, 2))
+                {
+                    case 0:
+                        foe.horizSpeed *= -1;
+                        break;
+                    case 1:
+                        foe.vertSpeed = 2;
+                        foe.horizSpeed = 0;
+                        break;
+
+                }
+            }
         }
     }
 }
